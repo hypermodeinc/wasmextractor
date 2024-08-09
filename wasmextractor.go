@@ -57,21 +57,20 @@ func ReadWasmFile(wasmFilePath string) ([]byte, error) {
 		return nil, fmt.Errorf("error reading wasm file: %v", err)
 	}
 
-	magic := []byte{0x00, 0x61, 0x73, 0x6D} // "\0asm"
-	if len(wasmBytes) < 8 || !bytes.Equal(wasmBytes[:4], magic) {
-		return nil, fmt.Errorf("invalid wasm file")
-	}
-
-	if binary.LittleEndian.Uint32(wasmBytes[4:8]) != 1 {
-		return nil, fmt.Errorf("unsupported wasm version")
+	if err := validateWasm(wasmBytes); err != nil {
+		return nil, err
 	}
 
 	return wasmBytes, nil
 }
 
 func ExtractWasmInfo(wasmBytes []byte) (*WasmInfo, error) {
-	info := &WasmInfo{}
 
+	if err := validateWasm(wasmBytes); err != nil {
+		return nil, err
+	}
+
+	info := &WasmInfo{}
 	offset := 8
 	for offset < len(wasmBytes) {
 		sectionID := wasmBytes[offset]
@@ -92,6 +91,21 @@ func ExtractWasmInfo(wasmBytes []byte) (*WasmInfo, error) {
 	}
 
 	return info, nil
+}
+
+var magic = []byte{0x00, 0x61, 0x73, 0x6D} // "\0asm"
+
+func validateWasm(data []byte) error {
+
+	if len(data) < 8 || !bytes.Equal(data[:4], magic) {
+		return fmt.Errorf("invalid wasm file")
+	}
+
+	if binary.LittleEndian.Uint32(data[4:8]) != 1 {
+		return fmt.Errorf("unsupported wasm version")
+	}
+
+	return nil
 }
 
 func readImports(data []byte) []WasmItem {
