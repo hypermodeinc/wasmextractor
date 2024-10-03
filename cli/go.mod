@@ -2,6 +2,6 @@ module wasmextractor
 
 go 1.22.5
 
-require github.com/hypermodeAI/wasmextractor v0.0.0
+require github.com/hypermodeinc/wasmextractor v0.0.0
 
-replace github.com/hypermodeAI/wasmextractor => ../
+replace github.com/hypermodeinc/wasmextractor => ../
