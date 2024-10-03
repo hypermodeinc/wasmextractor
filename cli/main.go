@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hypermodeAI/wasmextractor"
+	"github.com/hypermodeinc/wasmextractor"
 )
 
 func main() {
